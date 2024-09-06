@@ -25,6 +25,9 @@ const updateSchema = z.object({
     .min(5, { message: "o conteúdo deve ter pelo menos 5 caracteres" })
     .transform((txt) => txt.toLowerCase()),
 });
+const deleteSchema = z.object({
+  id: z.string().uuid({ message: "o id da tarefa está inválido" }),
+});
 //*importar o helpers zod para a validação
 
 export const criarPostagem = async (request, response) => {
@@ -128,12 +131,36 @@ export const AtualizarPostagem = async (request, response) => {
     const [linhasAfetadas] = await Postagem.update(postagemAtualizada, {
       where: { id },
     });
-    if(linhasAfetadas === 0){
-      response.status(404).json({message: "Postagem não encontrada"})
-      return
+    if (linhasAfetadas === 0) {
+      response.status(404).json({ message: "Postagem não encontrada" });
+      return;
     }
-    response.status(200).json({message: "postagem atualizada"})
+    response.status(200).json({ message: "postagem atualizada" });
   } catch (error) {
-    response.status(500).json({error: "erro ao atualizar postagem"})
+    response.status(500).json({ error: "erro ao atualizar postagem" });
+  }
+};
+export const DeletarPostagem = async (request, response) => {
+  const paramValidator = getSchema.safeParse(request.params);
+  if (!paramValidator.success) {
+    response.status(400).json({
+      message: "número de identificação está inválido",
+      detalhes: formatZodError(paramValidator.error),
+    });
+    return;
+  }
+  const { id } = request.params;
+  try {
+    const linhasAfetadas = await Postagem.destroy({
+      where: { id },
+    });
+    if (linhasAfetadas === 0) {
+      response.status(404).json({ message: "postagem não encontrada" });
+      return;
+    }
+    response.status(200).json({ message: "postagem deletada" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "erro ao deletar postagem" });
   }
 };

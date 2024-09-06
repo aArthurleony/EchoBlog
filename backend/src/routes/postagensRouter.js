@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   AtualizarPostagem,
   criarPostagem,
+  DeletarPostagem,
   ListarPostagens,
   ListarUnicaPostagem,
 } from "../controllers/postagensController.js";
@@ -13,5 +14,6 @@ router.post("/", criarPostagem);
 router.get("/", ListarPostagens);
 router.get("/:id", ListarUnicaPostagem);
 router.put("/:id", AtualizarPostagem);
+router.delete("/:id", DeletarPostagem)
 
 export default router;
