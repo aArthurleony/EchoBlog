@@ -15,6 +15,16 @@ const createSchema = z.object({
 const getSchema = z.object({
   id: z.string().uuid({ message: "o id da tarefa está inválido" }),
 });
+const updateSchema = z.object({
+  titulo: z
+    .string()
+    .min(3, { message: "o titulo deve ter pelo menos 3 caracteres" })
+    .transform((txt) => txt.toLowerCase()),
+  conteudo: z
+    .string()
+    .min(5, { message: "o conteúdo deve ter pelo menos 5 caracteres" })
+    .transform((txt) => txt.toLowerCase()),
+});
 //*importar o helpers zod para a validação
 
 export const criarPostagem = async (request, response) => {
@@ -88,5 +98,42 @@ export const ListarUnicaPostagem = async (request, response) => {
     response.status(200).json(postagem);
   } catch (error) {
     response.status(500).json({ error: "erro ao buscar postagens" });
+  }
+};
+export const AtualizarPostagem = async (request, response) => {
+  const paramValidator = getSchema.safeParse(request.params);
+  if (!paramValidator.success) {
+    response.status(400).json({
+      message: "Numero de identificação está inválido",
+      detalhes: formatZodError(paramValidator.error),
+    });
+    return;
+  }
+  const updateValidator = updateSchema.safeParse(request.body);
+  if (!updateValidator.success) {
+    response.status(400).json({
+      message: "dados para tualização estão incorretos",
+      details: formatZodError(updateValidator.error),
+    });
+    return;
+  }
+  const { id } = request.params;
+  const { titulo, conteudo, imagem } = request.body;
+  const postagemAtualizada = {
+    titulo,
+    conteudo,
+    imagem,
+  };
+  try {
+    const [linhasAfetadas] = await Postagem.update(postagemAtualizada, {
+      where: { id },
+    });
+    if(linhasAfetadas === 0){
+      response.status(404).json({message: "Postagem não encontrada"})
+      return
+    }
+    response.status(200).json({message: "postagem atualizada"})
+  } catch (error) {
+    response.status(500).json({error: "erro ao atualizar postagem"})
   }
 };
