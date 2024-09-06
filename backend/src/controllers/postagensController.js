@@ -1,4 +1,4 @@
-import Postagem from "../models/postagensModel";
+import Postagem from "../models/postagensModel.js";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
 
@@ -24,6 +24,17 @@ export const criarPostagem = async (request, response) => {
   }
   const { titulo, conteudo, dataPublicacao, autor, imagem } = request.body;
   const novaPostagem = {
-    titulo,conteudo, dataPublicacao, autor, imagem
+    titulo,
+    conteudo,
+    dataPublicacao,
+    autor,
+    imagem,
+  };
+  try {
+    await Postagem.create(novaPostagem);
+    response.status(201).json({message: "postagem criada"})
+  } catch (error) {
+    console.error(error)
+    response.status(500).json({error: "erro ao cadastrar postagem"})
   }
 };

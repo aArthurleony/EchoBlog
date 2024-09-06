@@ -1,13 +1,14 @@
 import "dotenv/config";
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 
 //*conexão com o banco de dados
-import conn from "./src/config/conn";
+import conn from "./config/conn.js";
 
 //*importar o model
 
 //*importar as rotas
+import postagensRouter from "./routes/postagensRouter.js"
 
 const PORT = process.env.PORT || 3333;
 const app = express();

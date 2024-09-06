@@ -38,4 +38,4 @@ const Postagem = conn.define(
   }
 );
 
-export default Postagem
+export default Postagem;

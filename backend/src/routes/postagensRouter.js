@@ -5,3 +5,5 @@ import { criarPostagem } from "../controllers/postagensController.js";
 const router = Router();
 
 router.post("/", criarPostagem);
+
+export default router
