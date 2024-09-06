@@ -12,6 +12,9 @@ const createSchema = z.object({
     .string()
     .min(3, { message: "o conteúdo deve ter pelo menos 3 caracteres" }),
 });
+const getSchema = z.object({
+  id: z.string().uuid({ message: "o id da tarefa está inválido" }),
+});
 //*importar o helpers zod para a validação
 
 export const criarPostagem = async (request, response) => {
@@ -59,10 +62,31 @@ export const ListarPostagens = async (request, response) => {
         totalPaginas === 0
           ? null
           : `http://localhost:3333/postagens?page=${page + 1}`,
-      postagens: postagens.rows
+      postagens: postagens.rows,
     });
   } catch (error) {
-    console.error(error)
-    response.status(500).json({error: "erro ao buscar postagens"})
+    console.error(error);
+    response.status(500).json({ error: "erro ao buscar postagens" });
+  }
+};
+export const ListarUnicaPostagem = async (request, response) => {
+  const paramValidator = getSchema.safeParse(request.params);
+  if (!paramValidator.success) {
+    response.status(400).json({
+      message: "número de identificação está inválido",
+      detalhes: formatZodError(paramValidator.error),
+    });
+    return;
+  }
+  const { id } = request.params;
+  try {
+    const postagem = await Postagem.findByPk(id);
+    if (postagem === null) {
+      response.status(404).json({ message: "postagem não encontrada" });
+      return;
+    }
+    response.status(200).json(postagem);
+  } catch (error) {
+    response.status(500).json({ error: "erro ao buscar postagens" });
   }
 };
