@@ -1,6 +1,7 @@
 import Postagem from "../models/postagensModel.js";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
+import { response } from "express";
 
 const createSchema = z.object({
   titulo: z
@@ -32,9 +33,36 @@ export const criarPostagem = async (request, response) => {
   };
   try {
     await Postagem.create(novaPostagem);
-    response.status(201).json({message: "postagem criada"})
+    response.status(201).json({ message: "postagem criada" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "erro ao cadastrar postagem" });
+  }
+};
+
+export const ListarPostagens = async (request, response) => {
+  const page = parseInt(request.query.page) || 1;
+  const limit = parseInt(request.query.limit) || 10;
+  const offset = (page - 1) * 10;
+  try {
+    const postagens = await Postagem.findAndCountAll({
+      limit,
+      offset,
+    });
+    const totalPaginas = Math.ceil(postagens.count / limit);
+    response.status(200).json({
+      totalPostagens: postagens.count,
+      totalPaginas,
+      paginaAtual: page,
+      itemsPorPagina: limit,
+      proximaPagina:
+        totalPaginas === 0
+          ? null
+          : `http://localhost:3333/postagens?page=${page + 1}`,
+      postagens: postagens.rows
+    });
   } catch (error) {
     console.error(error)
-    response.status(500).json({error: "erro ao cadastrar postagem"})
+    response.status(500).json({error: "erro ao buscar postagens"})
   }
 };
