@@ -5,10 +5,9 @@ import cors from "cors";
 //*conexão com o banco de dados
 import conn from "./config/conn.js";
 
-//*importar o model
-
 //*importar as rotas
-import postagensRouter from "./routes/postagensRouter.js"
+import postagensRouter from "./routes/postagensRouter.js";
+import usuariosRouter from "./routes/usuariosRouter.js";
 
 const PORT = process.env.PORT || 3333;
 const app = express();
@@ -31,10 +30,10 @@ conn
 
 //*utilizar as rotas
 app.use("/postagens", postagensRouter);
+app.use("/usuarios", usuariosRouter);
 
-
-app.use((request, response)=>{
-    response.status(404).json({message: "Rota não encontrada"})
-})
+app.use((request, response) => {
+  response.status(404).json({ message: "Rota não encontrada" });
+});
 
 //*primeiro cria a rota, dps o controlador

@@ -1,7 +1,6 @@
 import Postagem from "../models/postagensModel.js";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
-import { response } from "express";
 
 const createSchema = z.object({
   titulo: z
