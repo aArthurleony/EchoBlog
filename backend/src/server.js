@@ -1,25 +1,33 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 
 //*conexão com o banco de dados
 import conn from "./config/conn.js";
 
-//*importar o model
-
 //*importar as rotas
-import postagensRouter from "./routes/postagensRouter.js"
+import postagensRouter from "./routes/postagensRouter.js";
 
 const PORT = process.env.PORT || 3333;
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// console.log("filename: "+__filename);
+// console.log("dirname: "+__dirname);
 
 //*3 middlewares
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//*conexão com o banco
+//*middleware necessário para imagens
+app.use("/public", express.static(path.join(__dirname, "public")));
 
+//*conexão com o banco
 conn
   .sync()
   .then(() => {
@@ -32,9 +40,8 @@ conn
 //*utilizar as rotas
 app.use("/postagens", postagensRouter);
 
-
-app.use((request, response)=>{
-    response.status(404).json({message: "Rota não encontrada"})
-})
+app.use((request, response) => {
+  response.status(404).json({ message: "Rota não encontrada" });
+});
 
 //*primeiro cria a rota, dps o controlador

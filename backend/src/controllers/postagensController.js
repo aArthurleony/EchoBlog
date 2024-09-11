@@ -1,7 +1,7 @@
+//*importar o model
 import Postagem from "../models/postagensModel.js";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
-import { response } from "express";
 
 const createSchema = z.object({
   titulo: z
@@ -39,7 +39,13 @@ export const criarPostagem = async (request, response) => {
     });
     return;
   }
-  const { titulo, conteudo, dataPublicacao, autor, imagem } = request.body;
+  const { titulo, conteudo, dataPublicacao, autor } = request.body;
+  let imagem;
+  if (request.file) {
+    imagem = request.file.filename;
+  } else {
+    imagem = "postagemDefault.png";
+  }
   const novaPostagem = {
     titulo,
     conteudo,
@@ -162,33 +168,5 @@ export const DeletarPostagem = async (request, response) => {
   } catch (error) {
     console.error(error);
     response.status(500).json({ message: "erro ao deletar postagem" });
-  }
-};
-export const UploadImagem = async (request, response) => {
-  try {
-    const { id } = request.params;
-    if (!request.file) {
-      return response.status(400).json({ error: "imagem não enviada" });
-    }
-    const post = await Postagem.findByPk(id);
-    if (!post) {
-      return response.status(404).json({ message: "postagem nao encontrada" });
-    }
-    post.imagem = `/img/${request.file.filename}`;
-    await post.save();
-    response
-      .status(200)
-      .json({ message: "imagem enviada com sucesso", imagem: post.imagem });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return response.status(400).json({
-        errors: error.errors.map((err) => ({
-          path: err.path,
-          message: err.message,
-        })),
-      });
-    }
-    console.error(error)
-    response.status(500).json({error: "erro ao enviar a imagem"})
   }
 };
