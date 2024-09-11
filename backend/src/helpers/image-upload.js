@@ -8,13 +8,13 @@ const __dirname = path.dirname(__filename);
 const Imagestorage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = "";
-    if (request.baseUrl.includes("usuarios")) {
+    if (req.baseUrl.includes("usuarios")) {
       folder = "usuarios";
-    } else if (request.baseUrl.includes("postagens")) {
+    } else if (req.baseUrl.includes("postagens")) {
       folder = "postagens";
     }
     cb(null, path.join(__dirname, `../public/${folder}`)); //*aonde vai armazenar as informações
-    console.log(folder)
+    console.log(folder);
   },
   filename: (req, file, cb) => {
     cb(
@@ -32,8 +32,9 @@ const Imageupload = multer({
     if (file.originalname.match(/\.(png ||jpg)$/)) {
       return cb(new Error("Por favor, envie apenas jpg ou png"));
     }
+    cb(null, true);
   },
 });
-console.log(Imageupload)
+console.log(Imageupload);
 
 export default Imageupload;

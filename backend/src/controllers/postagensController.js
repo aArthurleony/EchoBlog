@@ -32,11 +32,11 @@ const deleteSchema = z.object({
 
 export const criarPostagem = async (request, response) => {
   const bodyValidation = createSchema.safeParse(request.body);
-  console.log(bodyValidation)
+  console.log(bodyValidation);
   if (!bodyValidation.success) {
     response.status(400).json({
       message: "os dados recebidos do corpo da aplicação são inválidos",
-      detalhes: bodyValidation.error,
+      detalhes: formatZodError(bodyValidation.error),
     });
     return;
   }
@@ -47,18 +47,31 @@ export const criarPostagem = async (request, response) => {
   } else {
     imagem = "postagemDefault.png";
   }
+  if (!titulo) {
+    response.status(400).json({ err: "O titulo é obirgatoria" });
+    return;
+  }
+  if (!conteudo) {
+    response.status(400).json({ err: "O conteudo é obirgatoria" });
+    return;
+  }
+  if (!autor) {
+    response.status(400).json({ err: "O autor é obirgatoria" });
+    return;
+  }
+
   const novaPostagem = {
     titulo,
     conteudo,
     dataPublicacao,
     autor,
     imagem,
-  };  
-  console.log("titulo: "+ titulo)
-  console.log("conteudo: "+conteudo)
-  console.log("dataPublicacao: "+ dataPublicacao)
-  console.log("autor: "+ autor)
-  console.log("imagem: "+ imagem)
+  };
+  console.log("titulo: " + titulo);
+  console.log("conteudo: " + conteudo);
+  console.log("dataPublicacao: " + dataPublicacao);
+  console.log("autor: " + autor);
+  console.log("imagem: " + imagem);
   try {
     await Postagem.create(novaPostagem);
     response.status(201).json({ message: "postagem criada" });
