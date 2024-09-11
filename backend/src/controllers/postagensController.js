@@ -32,11 +32,11 @@ const deleteSchema = z.object({
 
 export const criarPostagem = async (request, response) => {
   const bodyValidation = createSchema.safeParse(request.body);
-  console.log(bodyValidation)
+  console.log(bodyValidation);
   if (!bodyValidation.success) {
     response.status(400).json({
       message: "os dados recebidos do corpo da aplicação são inválidos",
-      detalhes: bodyValidation.error,
+      detalhes: formatZodError(bodyValidation.error),
     });
     return;
   }
