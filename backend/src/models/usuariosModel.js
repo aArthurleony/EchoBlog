@@ -23,6 +23,10 @@ const Usuario = conn.define(
       allowNull: false,
       timestamps: false,
     },
+    imagem: {
+      type: DataTypes.STRING,
+      required: false,
+    },
     papel: {
       type: DataTypes.ENUM,
       defaultValue: "leitor",

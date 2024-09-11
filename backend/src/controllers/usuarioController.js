@@ -12,7 +12,7 @@ const cadastroSchema = z.object({
     .min(3, { message: "o email deve ter pelo menos 3 caracteres" }),
   senha: z
     .string()
-    .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
+    .min(8, { message: "a senha deve ter pelo menos 8 caracteres" }),
 });
 
 export const cadastrarUsuario = async (request, response) => {
@@ -25,10 +25,17 @@ export const cadastrarUsuario = async (request, response) => {
     return;
   }
   const { nome, email, senha, papel } = request.body;
+  let imagem;
+  if (request.file) {
+    imagem = request.file.filename;
+  } else {
+    imagem = "usuarioDefault.png";
+  }
   const novoUsuario = {
     nome,
     email,
     senha,
+    imagem,
     papel,
   };
   try {
