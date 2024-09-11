@@ -32,6 +32,7 @@ const deleteSchema = z.object({
 
 export const criarPostagem = async (request, response) => {
   const bodyValidation = createSchema.safeParse(request.body);
+  console.log(bodyValidation)
   if (!bodyValidation.success) {
     response.status(400).json({
       message: "os dados recebidos do corpo da aplicação são inválidos",
@@ -52,7 +53,12 @@ export const criarPostagem = async (request, response) => {
     dataPublicacao,
     autor,
     imagem,
-  };
+  };  
+  console.log("titulo: "+ titulo)
+  console.log("conteudo: "+conteudo)
+  console.log("dataPublicacao: "+ dataPublicacao)
+  console.log("autor: "+ autor)
+  console.log("imagem: "+ imagem)
   try {
     await Postagem.create(novaPostagem);
     response.status(201).json({ message: "postagem criada" });

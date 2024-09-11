@@ -14,6 +14,7 @@ const Imagestorage = multer.diskStorage({
       folder = "postagens";
     }
     cb(null, path.join(__dirname, `../public/${folder}`)); //*aonde vai armazenar as informações
+    console.log(folder)
   },
   filename: (req, file, cb) => {
     cb(
@@ -33,5 +34,6 @@ const Imageupload = multer({
     }
   },
 });
+console.log(Imageupload)
 
 export default Imageupload;
