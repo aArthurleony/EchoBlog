@@ -1,4 +1,5 @@
 import Usuario from "../models/usuariosModel.js";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
 
@@ -12,7 +13,7 @@ const cadastroSchema = z.object({
     .min(3, { message: "o email deve ter pelo menos 3 caracteres" }),
   senha: z
     .string()
-    .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
+    .min(8, { message: "a senha deve ter pelo menos 8 caracteres" }),
 });
 const updateSchema = z.object({
   nome: z
@@ -26,6 +27,9 @@ const updateSchema = z.object({
     .string()
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
+
+
+
 export const cadastrarUsuario = async (request, response) => {
   const bodyValidation = cadastroSchema.safeParse(request.body);
   if (!bodyValidation.success) {
@@ -36,10 +40,17 @@ export const cadastrarUsuario = async (request, response) => {
     return;
   }
   const { nome, email, senha, papel } = request.body;
+  let imagem;
+  if (request.file) {
+    imagem = request.file.filename;
+  } else {
+    imagem = "usuarioDefault.png";
+  }
   const novoUsuario = {
     nome,
     email,
     senha,
+    imagem,
     papel,
   };
   try {
@@ -50,6 +61,7 @@ export const cadastrarUsuario = async (request, response) => {
     response.status(500).json({ error: "erro ao cadastrar usuario" });
   }
 };
+
 export const atualizarUsuario = async (request, response) => {
   // const paramValidator = getSchema.safeParse(request.params);
   // if (!paramValidator.success) {
