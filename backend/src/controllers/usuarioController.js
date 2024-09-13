@@ -16,7 +16,12 @@ const cadastroSchema = z.object({
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
 
-const LoginSchema = z.object({
+
+const updateSchema = z.object({
+  nome: z
+    .string()
+    .min(3, { message: "o nome deve ter pelo menos 3 caracteres" })
+    .transform((txt) => txt.toLowerCase()),
   email: z
     .string()
     .min(3, { message: "o email deve ter pelo menos 3 caracteres" }),
@@ -24,6 +29,9 @@ const LoginSchema = z.object({
     .string()
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
+
+
+
 
 export const cadastrarUsuario = async (request, response) => {
   const bodyValidation = cadastroSchema.safeParse(request.body);
@@ -49,39 +57,42 @@ export const cadastrarUsuario = async (request, response) => {
     response.status(500).json({ error: "erro ao cadastrar usuario" });
   }
 };
-
-export const login = async (request, response) => {
-  const bodyValidation = LoginSchema.safeParse(request.body);
-  if (!bodyValidation.success) {
+export const atualizarUsuario = async (request, response) => {
+  // const paramValidator = getSchema.safeParse(request.params);
+  // if (!paramValidator.success) {
+  //   response.status(400).json({
+  //     message: "numero de identicação está inválido",
+  //     detalhes: formatZodError(paramValidator),
+  //   });
+  //   return;
+  // }
+  const updateValidator = updateSchema.safeParse(request.body);
+  if (!updateValidator.success) {
     response.status(400).json({
-      message: "os dados recebidos do corpo são inválidos",
-      detalhes: bodyValidation.error,
+      message: "dados para atualização estão incorretos",
+      details: formatZodError(updateValidator.error),
     });
     return;
   }
-  const { email, senha } = request.body;
-
-  const usuario = await Usuario.findOne({
-    raw: true,
-    where: {
-      email: email,
-      senha: senha,
-    },
-  });
+  const { id } = request.params;
+  const { nome, email, senha } = request.body;
+  const usuarioAtualizado = {
+    nome,
+    email,
+    senha,
+  };
   try {
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        papel: usuario.papel,
-      },
-      process.env.senha_json
-    );
-    response
-      .status(200)
-      .json({ message: "login realizado com sucesso\n" + token });
+    const [linhasAfetadas] = await Usuario.update(usuarioAtualizado, {
+      where: { id },
+    });
+    if (linhasAfetadas === 0) {
+      response.status(404).json({ message: "usuario não encontrado" });
+      return;
+    }
+    response.status(200).json({
+      message: "usuario atualizado",
+    });
   } catch (error) {
-    console.log(error);
-    response.status(400).json({ error: "erro ao realizar login" });
-    //* O sistema deve retornar um token de autenticação (JWT) para ser usado em requisições subsequentes.
+    response.status(500).json({ message: "erro ao atualizar usuario" });
   }
 };
