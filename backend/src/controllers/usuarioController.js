@@ -28,8 +28,6 @@ const updateSchema = z.object({
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
 
-
-
 export const cadastrarUsuario = async (request, response) => {
   const bodyValidation = cadastroSchema.safeParse(request.body);
   if (!bodyValidation.success) {
@@ -81,10 +79,15 @@ export const atualizarUsuario = async (request, response) => {
   }
   const { id } = request.params;
   const { nome, email, senha } = request.body;
+  let imagem
+  if (request.file) {
+    imagem = request.file.filename;
+  }
   const usuarioAtualizado = {
     nome,
     email,
     senha,
+    imagem,
   };
   try {
     const [linhasAfetadas] = await Usuario.update(usuarioAtualizado, {

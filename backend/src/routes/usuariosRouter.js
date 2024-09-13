@@ -8,6 +8,6 @@ import {
 const router = Router();
 
 router.post("/", Imageupload.single("imagem"), cadastrarUsuario);
-router.put("/:id", atualizarUsuario);
+router.put("/:id", Imageupload.single("imagem"), atualizarUsuario);
 
 export default router;
