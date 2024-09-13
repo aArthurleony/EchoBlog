@@ -1,8 +1,8 @@
 import Usuario from "../models/usuariosModel.js";
-import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
-import createUserToken from "../helpers/create-user-token.js";
+
 
 const cadastroSchema = z.object({
   nome: z
@@ -29,10 +29,6 @@ const updateSchema = z.object({
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
 const LoginSchema = z.object({
-  nome: z
-    .string()
-    .min(3, { message: "o nome deve ter pelo menos 3 caracteres" })
-    .transform((txt) => txt.toLowerCase()),
   email: z
     .string()
     .min(3, { message: "o email deve ter pelo menos 3 caracteres" }),
@@ -67,7 +63,7 @@ export const cadastrarUsuario = async (request, response) => {
 };
 
 export const login = async (request, response) => {
-  const bodyValidation = cadastroSchema.safeParse(request.body);
+  const bodyValidation = LoginSchema.safeParse(request.body);
   if (!bodyValidation.success) {
     response.status(400).json({
       message: "os dados recebidos do corpo são inválidos",
@@ -75,18 +71,30 @@ export const login = async (request, response) => {
     });
     return;
   }
-  const { nome, email, senha } = request.body;
+  const { email, senha } = request.body;
 
-  const usuario = data[0];
-  const compareSenha = await bcrypt.compare(senha, usuario.senha);
-  if (!compareSenha) {
-    return response.status(401).json({ message: "senha inválida" });
-  }
+  const usuario = await Usuario.findOne({
+    raw: true,
+    where: {
+      email: email,
+      senha: senha,
+    },
+  });
   try {
-    await createUserToken(usuario, request, response);
+    const token = jwt.sign(
+      {
+        id: usuario.id,
+        papel: usuario.papel,
+      },
+      process.env.senha_json
+    );
+    response
+      .status(200)
+      .json({ message: "login realizado com sucesso\n" + token });
   } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: "erro ao processar informação" });
+    console.log(error);
+    response.status(400).json({ error: "erro ao realizar login" });
+    //* O sistema deve retornar um token de autenticação (JWT) para ser usado em requisições subsequentes.
   }
 };
 
