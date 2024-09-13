@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { cadastrarUsuario } from "../controllers/usuarioController.js";
-import Imageupload from "../helpers/image-upload.js";
+import {
+  cadastrarUsuario,
+  atualizarUsuario,
+} from "../controllers/usuarioController.js";
 
 const router = Router();
 
-router.post("/", Imageupload.single("imagem"), cadastrarUsuario);
+router.post("/", cadastrarUsuario);
+router.put("/:id", atualizarUsuario);
 
 export default router;
