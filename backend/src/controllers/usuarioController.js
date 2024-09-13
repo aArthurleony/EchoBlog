@@ -79,7 +79,7 @@ export const atualizarUsuario = async (request, response) => {
   }
   const { id } = request.params;
   const { nome, email, senha } = request.body;
-  let imagem
+  let imagem;
   if (request.file) {
     imagem = request.file.filename;
   }
@@ -102,5 +102,19 @@ export const atualizarUsuario = async (request, response) => {
     });
   } catch (error) {
     response.status(500).json({ message: "erro ao atualizar usuario" });
+  }
+};
+export const login = async (request, response) => {
+  const { email, senha } = request.body;
+  const usuarioLogado = {
+    email,
+    senha,
+  };
+  try {
+    await novoUsuario.create(usuarioLogado);
+    response.status(201).json({ message: "usuário cadastrado" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "erro ao cadastrar usuario" });
   }
 };

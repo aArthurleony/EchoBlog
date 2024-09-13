@@ -2,10 +2,14 @@ import jwt from "jsonwebtoken";
 
 const createUserToken = async (usuario, request, response) => {
   //* criar o token
-  const token = jwt.sign({
-    nome: usuario.nome,
-    id: usuario.id,
-  });
+  const token = jwt.sign(
+    {
+      email: usuario.email,
+      senha: usuario.senha,
+      papel: usuario.papel,
+    },
+    "SENHASUPERSEGURAEDIFICIL"
+  );
   //*retornar o token
   response.status(200).json({
     message: "você está logado",
