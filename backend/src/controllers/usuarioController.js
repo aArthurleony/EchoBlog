@@ -15,18 +15,7 @@ const cadastroSchema = z.object({
     .string()
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
-const updateSchema = z.object({
-  nome: z
-    .string()
-    .min(3, { message: "o nome deve ter pelo menos 3 caracteres" })
-    .transform((txt) => txt.toLowerCase()),
-  email: z
-    .string()
-    .min(3, { message: "o email deve ter pelo menos 3 caracteres" }),
-  senha: z
-    .string()
-    .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
-});
+
 const LoginSchema = z.object({
   email: z
     .string()
@@ -96,4 +85,3 @@ export const login = async (request, response) => {
     //* O sistema deve retornar um token de autenticação (JWT) para ser usado em requisições subsequentes.
   }
 };
-
