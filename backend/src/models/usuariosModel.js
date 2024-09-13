@@ -17,7 +17,6 @@ const Usuario = conn.define(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     senha: {
       type: DataTypes.STRING,
@@ -40,3 +39,14 @@ const Usuario = conn.define(
 );
 
 export default Usuario;
+
+
+
+
+
+
+
+
+
+
+

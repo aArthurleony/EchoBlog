@@ -32,7 +32,6 @@ const updateSchema = z.object({
 
 
 
-
 export const cadastrarUsuario = async (request, response) => {
   const bodyValidation = cadastroSchema.safeParse(request.body);
   if (!bodyValidation.success) {
@@ -64,6 +63,7 @@ export const cadastrarUsuario = async (request, response) => {
     response.status(500).json({ error: "erro ao cadastrar usuario" });
   }
 };
+
 export const atualizarUsuario = async (request, response) => {
   // const paramValidator = getSchema.safeParse(request.params);
   // if (!paramValidator.success) {
