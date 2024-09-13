@@ -15,8 +15,6 @@ const cadastroSchema = z.object({
     .string()
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
-
-
 const updateSchema = z.object({
   nome: z
     .string()
@@ -29,9 +27,6 @@ const updateSchema = z.object({
     .string()
     .min(3, { message: "a senha deve ter pelo menos 3 caracteres" }),
 });
-
-
-
 
 export const cadastrarUsuario = async (request, response) => {
   const bodyValidation = cadastroSchema.safeParse(request.body);
