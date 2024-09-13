@@ -17,12 +17,15 @@ const Usuario = conn.define(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     senha: {
       type: DataTypes.STRING,
       allowNull: false,
       timestamps: false,
+    },
+    imagem: {
+      type: DataTypes.STRING,
+      required: false,
     },
     papel: {
       type: DataTypes.ENUM,
@@ -36,3 +39,14 @@ const Usuario = conn.define(
 );
 
 export default Usuario;
+
+
+
+
+
+
+
+
+
+
+

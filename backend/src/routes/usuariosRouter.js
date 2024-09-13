@@ -1,4 +1,5 @@
 import { Router } from "express";
+import Imageupload from "../helpers/image-upload.js";
 import {
   cadastrarUsuario,
   atualizarUsuario,
@@ -6,7 +7,7 @@ import {
 
 const router = Router();
 
-router.post("/", cadastrarUsuario);
+router.post("/", Imageupload.single("imagem"), cadastrarUsuario);
 router.put("/:id", atualizarUsuario);
 
 export default router;
