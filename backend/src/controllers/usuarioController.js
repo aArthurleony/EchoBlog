@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import formatZodError from "../helpers/formatZodError.js";
 
-
 const cadastroSchema = z.object({
   nome: z
     .string()
@@ -98,21 +97,3 @@ export const login = async (request, response) => {
   }
 };
 
-export const atualizarUsuario = async (request, response) => {
-  const paramValidator = getSchema.safeParse(request.params);
-  if (!paramValidator.success) {
-    response.status(400).json({
-      message: "numero de identicação está inválido",
-      detalhes: formatZodError(paramValidator),
-    });
-    return;
-  }
-  const updateValidator = updateSchema.safeParse(request.body);
-  if (!updateValidator.success) {
-    response.status(400).json({
-      message: "dados par atualização estão incorretos",
-      details: formatZodError(updateValidator.error),
-    });
-    return;
-  }
-};
